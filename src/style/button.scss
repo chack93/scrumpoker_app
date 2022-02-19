@@ -1,0 +1,36 @@
+.btn {
+  margin: 0;
+  padding: 0;
+  background-color: transparent;
+  color: $primary_color;
+  border: 0;
+  text-shadow: 0 1px 1px rgba($shadow, 0.3);
+  font-size: 1rem;
+}
+.icon-btn {
+  background: $accent;
+  width: 2rem;
+  height: 2rem;
+  font-size: 2rem;
+  border-radius: 100%;
+  border: 1px solid rgba($primary_color, 0.7);
+  box-shadow: 0 0.25rem 0.125rem rgba($shadow, 0.3);
+}
+.icon:before {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+// fix icons for buttons
+.icon.mu-play:before {
+  margin-left: 2px;
+}
+.icon.mu-opts-v:before {
+  font-size: 70%;
+}
+.icon.mu-opts-h:before {
+  font-size: 75%;
+}
