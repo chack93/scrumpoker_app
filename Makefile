@@ -29,17 +29,8 @@ destroy_image:
 .PHONY: destroy
 destroy: destroy_container destroy_image
 
-.PHONY: copy_fonts
-copy_fonts:
-	npm install
-	cp node_modules/microns/fonts/microns.eot public/app/scrumpoker/font/.
-	cp node_modules/microns/fonts/microns.svg public/app/scrumpoker/font/.
-	cp node_modules/microns/fonts/microns.ttf public/app/scrumpoker/font/.
-	cp node_modules/microns/fonts/microns.woff public/app/scrumpoker/font/.
-	cp node_modules/microns/fonts/microns.woff2 public/app/scrumpoker/font/.
-
 .PHONY: build
-build: destroy_image copy_fonts
+build: destroy_image
 	docker build --tag ${NAME}:${TAG} -f ./Dockerfile .
 	docker tag ${NAME}:${TAG} ${NAME}:latest
 
@@ -52,12 +43,12 @@ create_docker_network:
 	docker network create ${DOCKER_CLOUD_NETWORK} || true
 
 .PHONY: watch
-watch: copy_fonts
+watch:
 	PORT=${PORT} \
 			 npm run dev
 
 .PHONY: run
-run: copy_fonts
+run:
 	npm run build; \
 		PORT=${PORT} \
 		npm run start
