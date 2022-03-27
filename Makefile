@@ -1,7 +1,7 @@
 NAME=scrumpoker_app
 TAG=$(shell cat package.json|grep version | sed -e 's/"version"://' -e 's/,//' -e 's/"//g' -e 's/ //g')
 DOCKER_CLOUD_NETWORK=net_cloud
-LOCALPORT=40006
+PORT ?= 8080
 
 .PHONY: help
 help:
@@ -10,8 +10,8 @@ help:
 		- build       build production docker image ${NAME}:${TAG}\n\
 		- stop        stop docker container ${NAME}\n\
 		- run-docker  run development docker container ${NAME}:latest\n\
-		- watch       run localy at port ${LOCALPORT} & watch for changes\n\
-		- run         run localy at port ${LOCALPORT}\n\
+		- watch       run localy at port ${PORT} & watch for changes\n\
+		- run         run localy at port ${PORT}\n\
 		- format      format code according to .prettierrc\n\
 		- release     push latest image to ghcr, login using personal access token env variable CR_PAT\n\
 		- deploy      release latest image on live server, env variable: CLOUD_REMOTE\n\
@@ -53,13 +53,13 @@ create_docker_network:
 
 .PHONY: watch
 watch: copy_fonts
-	PORT=${LOCALPORT} \
+	PORT=${PORT} \
 			 npm run dev
 
 .PHONY: run
 run: copy_fonts
 	npm run build; \
-		PORT=${LOCALPORT} \
+		PORT=${PORT} \
 		npm run start
 
 .PHONY: format

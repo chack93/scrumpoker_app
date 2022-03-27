@@ -4,7 +4,7 @@ const appName = "SP -"
 const routes = {
   "#": { title: `${appName} Login`, view: "view-login" },
   "#login": { title: `${appName} Login`, view: "view-login" },
-  "#table": { title: `${appName} Table`, view: "view-table" },
+  "#session": { title: `${appName} Session`, view: "view-session" },
   //"#about": { title: "About", view: "view-about" },
 };
 

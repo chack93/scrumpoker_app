@@ -40,7 +40,7 @@ const style = `
   position: absolute;
   top: 0;
   left: 0.5rem;
-  background-image: url("./image/scrumpoker_logo.png");
+  background-image: url("./image/logo.png");
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;

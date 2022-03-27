@@ -2,6 +2,10 @@
   animation: error_shake 0.6s cubic-bezier(0, 0.6, 0.2, 1.2);
 }
 
+.anim-logo-jump {
+  animation: logo_jump 0.6s cubic-bezier(0, 0.6, 0.2, 1.2);
+}
+
 @keyframes logo_jump {
   0% {
     transform: translateY(0px) rotate(0deg);

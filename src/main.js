@@ -5,9 +5,12 @@ import "./component/sheet.js";
 import "./component/scroll-text.js";
 import "./component/input-text.js";
 import "./component/input-button.js";
+import "./component/admin-setting.js";
+import "./component/estimation-card.js";
+import "./component/table.js";
 import "./view/router.js";
 import "./view/login.js";
-import "./view/table.js";
+import "./view/session.js";
 import {defineNewComponent} from "./base_component.js" 
 
 const template = `
@@ -20,7 +23,7 @@ const template = `
     </div>
   </component-header>
 
-  <view-router initial="#table"></view-router>
+  <view-router initial="#login"></view-router>
 
   <component-sheet if:true="{{showAboutSheet}}" on:close="closeAboutSheetHandler">
     <div slot="content" class="sheet-content">

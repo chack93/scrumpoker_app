@@ -6,6 +6,10 @@ const template = `
   <i if:true="{{iconExists}}" class="mu {{icon}}"></i>
   <input
     type="{{type}}"
+    pattern="{{pattern}}"
+    min="{{min}}"
+    max="{{max}}"
+    step="{{step}}"
     placeholder="{{placeholder}}"
     id="input"
     name="input"
@@ -13,7 +17,7 @@ const template = `
     class="secondary-bg"
     on:input="inputChangedHandler"
     on:keydown="inputKeydownHandler"
-    value="{{value}}"/>
+    value="{{intValue}}"/>
   <span if:true="{{isRequired}}" title="Required" class="required error-color">*</span>
   <i class="mu mu-cancel" on:click="clickDeleteHandler"></i>
   <datalist id="datalist"></datalist>
@@ -77,22 +81,23 @@ defineNewComponent(
   {
     template,
     style,
-    attributes: ["icon", "initial-value", "focused", "label", "type", "placeholder", "required"],
+    attributes: ["icon", "initial-value", "value", "focused", "label", "type", "pattern", "min", "max", "step", "placeholder", "required"],
     state: {
       labelExists: false,
       iconExists: false,
       datalist: [],
-      value: "",
+      intValue: "",
       inputTimeout: undefined,
       lastInputChange: 0,
       isRequired: false,
     },
     connected() {
+      this.value = this.value || this["initial-value"]
       this.labelExists = this.label != "";
       this.iconExists = this.icon != "";
       this.type = this.type || "text";
       if (this["initial-value"]) {
-        this.value = this["initial-value"];
+        this.intValue = this["initial-value"];
       }
       if (this.focused) {
         setTimeout(() => {
@@ -105,9 +110,13 @@ defineNewComponent(
         this.refs.datalist.innerHTML = newValue.map((el) => `<option value="${el}">`).join("");
       },
       "initial-value"(newValue) {
-        this.value = newValue;
+        this.intValue = newValue;
       },
       value(newValue) {
+        this.intValue = newValue
+      },
+      intValue(newValue) {
+        this.value = newValue
         this.dispatchEvent(
           new CustomEvent("input-complete", {
             bubbles: true,
@@ -116,8 +125,7 @@ defineNewComponent(
         );
       },
       required(newVal) {
-        console.log("required", newVal)
-        this.isRequired = newVal == "true" 
+        this.isRequired = newVal == "true"
       }
     },
     methods: {
@@ -125,24 +133,30 @@ defineNewComponent(
         this.refs.input.focus();
       },
       inputChangedHandler(event) {
-        this.lastInputChange = event.timeStamp;
-        if (event.timeStamp - this.lastInputChange < 300) {
-          clearTimeout(this.inputTimeout);
-          this.inputTimeout = setTimeout(() => {
-            this.value = event.target.value;
-          }, 300);
+        const now = Date.now()
+        clearTimeout(this.inputTimeout);
+        if (now - this.lastInputChange < 300) {
+          this.inputTimeout = setTimeout(() => this.inputChangedHandler(event), 300);
           return;
         }
-        this.value = event.target.value;
+        this.lastInputChange = now;
+        const newVal = this.getCleanedValue();
+        this.intValue = newVal;
+        event.target.value = newVal;
+      },
+      getCleanedValue() {
+        if (this.pattern && !RegExp(this.pattern).test(this.refs.input.value))
+          return this.intValue;
+        return this.refs.input.value;
       },
       inputKeydownHandler(event) {
         if (event.key === "Enter") {
-          this.value = this.refs.input.value;
+          this.intValue = this.refs.input.value;
         }
       },
       clickDeleteHandler() {
         this.refs.input.value = "";
-        this.value = "";
+        this.intValue = "";
       },
     },
   }

@@ -25,6 +25,7 @@ export function NewComponent({
     store = store;
     #state = {};
     #observedDomMap = {};
+    #connectedCbDone = false;
     refs = {};
     static get observedAttributes() {
       return attributes;
@@ -74,6 +75,7 @@ export function NewComponent({
         this[this.attributes[i].name] = this.attributes[i].value;
       }
       connected.call(this);
+      this.#connectedCbDone = true;
     }
     disconnectedCallback() {
       disconnected.call(this);
@@ -96,7 +98,7 @@ export function NewComponent({
             const oldValue = _this.#state[k] != undefined ? JSON.parse(JSON.stringify(_this.#state[k])) : undefined;
             _this.#state[k] = newValue;
             _this.refresh(k);
-            if (observer[k] && newValue != oldValue) {
+            if (this.#connectedCbDone && observer[k] && newValue != oldValue) {
               observer[k].apply(this, [newValue, oldValue]);
             }
           } catch (e) {

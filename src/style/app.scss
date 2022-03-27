@@ -20,8 +20,8 @@ $toolbar_height: 3rem;
 
 $microns-font-file: "./font/microns";
 @import "../../node_modules/microns/fonts/microns.scss";
-@import "./classes.scss";
 @import "./button.scss";
+@import "./classes.scss";
 @import "./animation.scss";
 
 @font-face {

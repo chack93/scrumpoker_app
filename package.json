@@ -22,5 +22,9 @@
     "dev": "npm-run-all --parallel start watch",
     "start": "serve -n -l tcp://0.0.0.0:$(echo $PORT) public",
     "format": "prettier --write ."
+  },
+  "dependencies": {
+    "reconnecting-websocket": "^4.4.0",
+    "uuid": "^8.3.2"
   }
 }
