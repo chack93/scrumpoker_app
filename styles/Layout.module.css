@@ -1,0 +1,49 @@
+.jumpAnim {
+  animation: logoJump 1s 5s cubic-bezier(0, 0.8, 0.2, 1.2);
+}
+
+.imgLogo:hover {
+  animation: logoShake 1s cubic-bezier(0, 0.8, 0.2, 1.2);
+}
+
+@keyframes logoJump {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  20% {
+    transform: rotate(10deg);
+  }
+  40% {
+    transform: translateY(-20%) rotate(-4.34deg);
+  }
+  60% {
+    transform: translateY(-20%) rotate(2.96deg);
+  }
+  80% {
+    transform: rotate(-1deg);
+  }
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+}
+
+@keyframes logoShake {
+  0% {
+    transform: rotate(0deg);
+  }
+  20% {
+    transform: rotate(15deg);
+  }
+  40% {
+    transform: rotate(-9.48deg);
+  }
+  60% {
+    transform: rotate(3.96deg);
+  }
+  80% {
+    transform: rotate(-1.56deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
