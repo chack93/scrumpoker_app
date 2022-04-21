@@ -1,6 +1,6 @@
-const baseUrl = "/api/scrumpoker"
+export const baseUrl = "/api/scrumpoker"
 
-type RestBodyClient = {
+export type RestBodyClient = {
   createdAt: string
   deletedAt: string
   id: string
@@ -11,7 +11,7 @@ type RestBodyClient = {
   sessionId: string
   viewer: boolean
 }
-type RestBodySession = {
+export type RestBodySession = {
   createdAt: string
   deletedAt: string
   id: string
@@ -22,7 +22,7 @@ type RestBodySession = {
   ownerClientId: string
   joinCode: string
 }
-type RestBodyHistory = {
+export type RestBodyHistory = {
   createdAt: string
   deletedAt: string
   id: string
@@ -33,14 +33,14 @@ type RestBodyHistory = {
   sessionId: string
   gameId: string
 }
-type RestResponse = {
-  head: Map<string, string>
+export type RestResponse = {
+  header: Map<string, string>
   body: object
 }
-interface RestResponseClient extends RestResponse {
+export interface RestResponseClient extends RestResponse {
   body: RestBodyClient
 }
-interface RestResponseSession extends RestResponse {
+export interface RestResponseSession extends RestResponse {
   body: RestBodySession
 }
 
@@ -49,6 +49,13 @@ export async function requestClientFetch(clientId: string): Promise<RestResponse
 }
 export async function requestClientCreate(name: string, sessionId: string = "", viewer: boolean = false): Promise<RestResponseClient> {
   return await request("POST", `${baseUrl}/client`, {
+    name,
+    sessionId,
+    viewer
+  }) as RestResponseClient
+}
+export async function requestClientUpdate(clientId: string, name: string, sessionId: string = "", viewer: boolean = false): Promise<RestResponseClient> {
+  return await request("PUT", `${baseUrl}/client/${clientId}`, {
     name,
     sessionId,
     viewer
@@ -83,16 +90,18 @@ export function request(method: string, path: string, body: object = undefined):
       body: body && JSON.stringify(body),
     })
       .then(async (response: Response) => {
-        const header = {}
+        const header = new Map<string, string>()
         const headerEntries = response.headers.entries()
         for (let idx in headerEntries) {
           header[headerEntries[idx][0]] = headerEntries[idx][1]
         }
-        if (response.status >= 200 && response.status < 300) return { body: await response.json(), header };
+        response.body
+        if (response.status >= 200 && response.status < 300) return { body: await response.text(), header };
         else reject(Error(`${response.status} - ${response.statusText}`));
       })
       .then(({ body, header }) => {
-        resolve({ body, header });
+        const bodyObject = body ? JSON.parse(body) : {}
+        resolve({ body: bodyObject, header });
       })
       .catch((error) => {
         reject(error);

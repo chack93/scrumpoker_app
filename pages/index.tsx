@@ -2,7 +2,7 @@ import {useRouter} from 'next/router'
 import React, {useEffect, useState} from 'react'
 import Layout from '../components/layout'
 import {getStorage, setStorage} from './api/localstorage'
-import {requestClientCreate, requestClientFetch, requestSessionCreate, requestSessionJoinCodeFetch} from './api/sp_rest'
+import {requestClientCreate, requestClientFetch, requestClientUpdate, requestSessionCreate, requestSessionJoinCodeFetch} from './api/sp_rest'
 
 export default function Home() {
   const router = useRouter()
@@ -28,34 +28,34 @@ export default function Home() {
   async function createGame(_event: React.MouseEvent<HTMLButtonElement>) {
     if (username.length < 1) return
 
-    setLoadingCreate(true)
-    try {
-      const newClient = await requestClientCreate(username)
-      setStorage("clientId", newClient.body.id)
-    } catch(e) {
-      console.error("login/create-client failed", e)
-      setErrorMsg("Create new session failed")
-      setLoadingCreate(false)
-      return
-    }
+      setLoadingCreate(true)
+      try {
+        const newClient = await requestClientCreate(username)
+        setStorage("clientId", newClient.body.id)
+      } catch(e) {
+        console.error("login/create-client failed", e)
+        setErrorMsg("Create new session failed")
+        setLoadingCreate(false)
+        return
+      }
 
-    try {
-      const newSession = await requestSessionCreate(getStorage("clientId"))
-      setStorage("sessionId", newSession.body.id)
-      setStorage("joinCode", newSession.body.joinCode)
-    } catch(e) {
-      console.error("login/create-session failed", e)
-      setErrorMsg("Create new session failed")
+      try {
+        const newSession = await requestSessionCreate(getStorage("clientId"))
+        setStorage("sessionId", newSession.body.id)
+        setStorage("joinCode", newSession.body.joinCode)
+      } catch(e) {
+        console.error("login/create-session failed", e)
+        setErrorMsg("Create new session failed")
+        setLoadingCreate(false)
+        return
+      }
       setLoadingCreate(false)
-      return
-    }
-    setLoadingCreate(false)
-    router.push("/game")
+      router.push("/game")
   }
 
   async function joinGame(_event: React.MouseEvent<HTMLButtonElement>) {
     if (username.length < 1 || joinCode.length < 6) return
-    setLoadingJoin(true)
+      setLoadingJoin(true)
 
     try {
       const session = await requestSessionJoinCodeFetch(joinCode)
@@ -70,6 +70,7 @@ export default function Home() {
     if (getStorage("clientId").length > 0) {
       try {
         await requestClientFetch(getStorage("clientId"))
+        await requestClientUpdate(getStorage("clientId"), username, getStorage("sessionId"))
       } catch(e) {
         console.info("login/fetch-client failed", e)
         setStorage("clientId", "")
@@ -124,30 +125,30 @@ export default function Home() {
                   <div className="flex w-full">
                     <div className="grid flex-grow">
                       <button className={`
-                          btn
-                          btn-accent
-                          btn-sm
-                          ${(
-                            !username
-                            || username.length < 1
-                          ) && "btn-disabled" }
-                          ${loadingCreate && "loading"}
+                        btn
+                        btn-accent
+                        btn-sm
+                        ${(
+                          !username
+                          || username.length < 1
+                        ) && "btn-disabled" }
+                        ${loadingCreate && "loading"}
                         `}
                         onClick={createGame}>Create</button>
                     </div>
                     <div className="divider divider-horizontal"></div>
                     <div className="grid flex-grow">
                       <button className={`
-                          btn
-                          btn-accent
-                          btn-sm
-                          ${(
-                            !username
-                            || !joinCode
-                            || username.length < 1
-                            || joinCode.length < 6
-                          ) && "btn-disabled" }
-                          ${loadingJoin && "loading"}
+                        btn
+                        btn-accent
+                        btn-sm
+                        ${(
+                          !username
+                          || !joinCode
+                          || username.length < 1
+                          || joinCode.length < 6
+                        ) && "btn-disabled" }
+                        ${loadingJoin && "loading"}
                         `}
                         onClick={joinGame}>Join</button>
                     </div>
