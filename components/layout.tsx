@@ -19,9 +19,9 @@ export default function Layout({ children, title = "" }: LayoutParam) {
         <link rel="icon" type="image/png" sizes="32x32" href="/app/scrumpoker/favicon/favicon-32x32.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="/app/scrumpoker/favicon/favicon-16x16.png" />
         <link rel="manifest" href="/app/scrumpoker/favicon/site.webmanifest" />
-        <link rel="mask-icon" href="/app/scrumpoker/favicon/safari-pinned-tab.svg" color="#51291e" />
+        <link rel="mask-icon" href="/app/scrumpoker/favicon/safari-pinned-tab.svg" color="#33050d" />
         <meta name="msapplication-TileColor" content="#da532c" />
-        <meta name="theme-color" content="#51291e" />
+        <meta name="theme-color" content="#272727" />
       </Head>
 
       <header>

@@ -1,7 +1,7 @@
 import ReconnectingWebSocket from "reconnecting-websocket"
 import {baseUrl, RestBodyClient, RestBodyHistory, RestBodySession} from "./sp_rest"
 
-let connection = undefined
+let connection: ReconnectingWebSocket = undefined
 
 export type WsMsg = {
   head: WsHead
@@ -27,7 +27,7 @@ export type WsMsgBodyUpdate = {
 
 export function Send(msg: WsMsg) {
   if (!connection)  {
-    connection = Connect(msg.head.clientId, msg.head.groupId)
+    Connect(msg.head.clientId, msg.head.groupId)
   }
   connection.send(JSON.stringify(msg))
 }
@@ -42,9 +42,9 @@ export function Close() {
 export function Connect(clientId: string, groupId: string) {
   const protocol = location.href.indexOf("https") !== -1 ? "wss://" : "ws://"
   const url = `${protocol}${location.host}${baseUrl}/ws/${clientId}/${groupId}`
-  const websocket = new ReconnectingWebSocket(url)
+  connection = new ReconnectingWebSocket(url)
 
-  websocket.addEventListener("message", event => {
+  connection.addEventListener("message", event => {
     window.dispatchEvent(
       new CustomEvent(`websocket-event`, {
         bubbles: true,
@@ -52,6 +52,4 @@ export function Connect(clientId: string, groupId: string) {
       })
     );
   })
-
-  return websocket
 }

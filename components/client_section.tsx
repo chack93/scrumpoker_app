@@ -1,15 +1,15 @@
 import React, {useEffect, useState} from 'react'
 import {RestBodyClient} from '../pages/api/sp_rest'
 
-export type ClientDetailSectionParam = {
+export type ClientSectionParam = {
   Client: RestBodyClient
   onClientChange: (name: string, isViewer: boolean) => void
 }
 
-export default function ClientDetailSection({
+export default function ClientSection({
   Client,
   onClientChange,
-}: ClientDetailSectionParam) {
+}: ClientSectionParam) {
 
   let [Name, setName] = useState("")
   let [Viewer, setViewer] = useState(false)
@@ -33,9 +33,9 @@ export default function ClientDetailSection({
   return (
     <>
       <div className="card w-full shadow-2xl bg-primary">
-        <div className="card-body px-12">
+        <div className="card-body">
           <h2 className="card-title">User</h2>
-          <div className="form-control w-96">
+          <div className="form-control">
             <label className="label">
               <span className="label-text">Name</span>
             </label>

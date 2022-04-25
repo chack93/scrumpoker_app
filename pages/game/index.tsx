@@ -1,17 +1,17 @@
 import {useRouter} from 'next/router'
 import React, { useEffect, useState} from 'react'
 import Layout from '../../components/layout'
-import SessionDetailSection from '../../components/session_detail_section'
+import SessionSection from '../../components/session_section'
 import {getStorage} from '../api/localstorage'
 import {requestClientFetch, requestSessionFetch, RestBodyClient, RestBodyHistory, RestBodySession} from '../api/sp_rest'
 import {Connect, Send, WsEventMsg} from '../api/sp_websocket'
 import debounce from "lodash/debounce"
-import ClientDetailSection from '../../components/client_detail_section'
+import ClientSection from '../../components/client_section'
+import EstimationSection from '../../components/estimation_section'
+import HistorySection from '../../components/history_section'
 
 export default function Home() {
   const router = useRouter()
-  const locationOrigin = typeof window !== "undefined" ? window.location.origin : ""
-  const locationPathname = typeof window !== "undefined" ? window.location.pathname : ""
 
   let [IsInit, setIsInit] = useState(false)
   let [Session, setSession] = useState({} as RestBodySession)
@@ -94,8 +94,20 @@ export default function Home() {
     const s = {...Session, cardSelectionList}
     sendStateToServer(s, undefined)
   }
+  function onNewGameHandler() {
+    const s = {...Session, gameStatus: "new"}
+    sendStateToServer(s, undefined)
+  }
+  function onRevealGameHandler() {
+    const s = {...Session, gameStatus: "reveal"}
+    sendStateToServer(s, undefined)
+  }
   function onClientChangeHandler(name: string, viewer: boolean) {
     const c = {...Client, name, viewer}
+    sendStateToServer(undefined, c)
+  }
+  function onClientEstimationChangeHandler(estimation: string) {
+    const c = {...Client, estimation}
     sendStateToServer(undefined, c)
   }
   const sendStateToServer = debounce(
@@ -120,30 +132,46 @@ export default function Home() {
   return (
     <Layout title="Game">
       <>
-        <h1 className="text-lg mb-2">GAME</h1>
-        <div className="hero">
-          <div className="hero-content grid justify-items-center">
-            <SessionDetailSection
+        <div className="flex flex-wrap justify-center">
+          <div className="basis-1/2 p-2">
+            <SessionSection
               Session={Session}
               Client={Client}
               onDescriptionChange={onDescriptionChangeHandler}
               onCardListChange={onCardListChangeHandler}
+              onNewGame={onNewGameHandler}
+              onRevealGame={onRevealGameHandler}
             />
-            <ClientDetailSection
+          </div>
+          <div className="basis-1/2 p-2">
+            <ClientSection
               Client={Client}
               onClientChange={onClientChangeHandler}
             />
-
-            {
-              ErrorMsg.length > 0 &&
-                <div className="alert alert-error shadow-lg">
-                  <div>
-                    <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    <div>{ErrorMsg}</div>
-                  </div>
-                </div>
-            }
           </div>
+          <div className="basis-1/2 p-2">
+            <EstimationSection
+              Client={Client}
+              Session={Session}
+              ClientList={ClientList}
+              onEstimationChange={onClientEstimationChangeHandler}
+            />
+          </div>
+          <div className="basis-1/2 p-2">
+            <HistorySection
+              HistoryList={HistoryList}
+            />
+          </div>
+
+          {
+            ErrorMsg.length > 0 &&
+              <div className="alert alert-error shadow-lg">
+                <div>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  <div>{ErrorMsg}</div>
+                </div>
+              </div>
+          }
         </div>
       </>
     </Layout>

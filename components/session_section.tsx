@@ -2,26 +2,45 @@ import React, {useEffect, useState} from 'react'
 import {RestBodyClient, RestBodySession} from '../pages/api/sp_rest'
 import EstimationCard from './estimation_card'
 
-export type SessionDetailSectionParam = {
+export type SessionSectionParam = {
   Session: RestBodySession
   Client: RestBodyClient
   onDescriptionChange: (description: string) => void
   onCardListChange: (cardSelectionList: string) => void
+  onNewGame: () => void
+  onRevealGame: () => void
 }
 
-type CardListType = {
+export type CardListType = {
   idx: number,
   key: string,
   value: string,
   active: boolean
 }
 
-export default function SessionDetailSection({
+export function parseCardString(str: string = ""): Array<CardListType> {
+  return str.split(",").map((el, idx) => {
+    const [value, active] = el.split("=")
+    return {key: getCardKey(idx, value, active == "true"), idx, value, active: active == "true"}
+  })
+}
+export function cardListToString(cardList: Array<CardListType>): string {
+  return cardList
+  .reduce((acc, el) => `${acc},${el.value}=${el.active.toString()}`, "")
+  .substring(1)
+}
+export function getCardKey(idx: number, value: string, active: boolean): string {
+  return `${idx.valueOf()}${value.valueOf()}${active?"t":"f"}`
+}
+
+export default function SessionSectionCard({
   Session,
   Client,
   onDescriptionChange,
-  onCardListChange
-}: SessionDetailSectionParam) {
+  onCardListChange,
+  onNewGame,
+  onRevealGame,
+}: SessionSectionParam) {
 
   const locationOrigin = typeof window !== "undefined" ? window.location.origin : ""
   const locationPathname = typeof window !== "undefined" ? window.location.pathname : ""
@@ -78,6 +97,12 @@ export default function SessionDetailSection({
     setCardList(newCardList)
     onCardListChange && onCardListChange(cardListToString(newCardList))
   }
+  function onClickNewGameHandler() {
+    onNewGame && onNewGame()
+  }
+  function onClickRevealtHandler() {
+    onRevealGame && onRevealGame()
+  }
 
   function isAdmin() {
     return Client.id === Session.ownerClientId
@@ -85,28 +110,14 @@ export default function SessionDetailSection({
   function getCardListCount() {
     return CardList.length
   }
-  function parseCardString(str: string = ""): Array<CardListType> {
-    return str.split(",").map((el, idx) => {
-      const [value, active] = el.split("=")
-      return {key: getCardKey(idx, value, active == "true"), idx, value, active: active == "true"}
-    })
-  }
-  function cardListToString(cardList: Array<CardListType>): string {
-    return cardList
-    .reduce((acc, el) => `${acc},${el.value}=${el.active.toString()}`, "")
-    .substring(1)
-  }
-  function getCardKey(idx: number, value: string, active: boolean): string {
-    return `${idx.valueOf()}${value.valueOf()}${active?"t":"f"}`
-  }
 
   return (
     <>
       <div className="card w-full shadow-2xl bg-primary">
-        <div className="card-body px-12">
+        <div className="card-body">
           <h2 className="card-title">Session</h2>
-          <div className="form-control w-96">
-            <div className="flex justify-between">
+          <div className="form-control">
+            <div className="flex justify-between gap-2">
               <span>Join Link: </span>
               <a
                 className="link-accent"
@@ -159,13 +170,20 @@ export default function SessionDetailSection({
                     {
                       CardList.map(({key, value, active}) =>
                         <EstimationCard
-                          className=""
                           key={key}
                           value={value}
                           active={active}
                           onStateChange={(v, a) => onEstimationCardChange(key, v, a)}/>
                                   )
                     }
+                  </div>
+                  <div className="flex justify-around mt-4">
+                    <button
+                      className="btn btn-sm btn-success"
+                      onClick={onClickNewGameHandler}>New Game</button>
+                    <button
+                      className="btn btn-sm btn-accent"
+                      onClick={onClickRevealtHandler}>Reveal</button>
                   </div>
                 </>
               )

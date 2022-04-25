@@ -21,7 +21,7 @@ module.exports = {
         graypink: {
           "base-100": "#494949",
           "primary": "#272727",
-          "secondary": "#51291E",
+          "secondary": "#33050d",
           "accent": "#E83151",
           "neutral": "#efe9e7",
           "info": "#3ABFF8",

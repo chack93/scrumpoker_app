@@ -5,7 +5,6 @@ export type EstimationCardParam = {
   active: boolean,
   readonly?: boolean,
   onStateChange?: (value: string, active: boolean) => void
-  className: string
 }
 
 export default function EstimationCard({
@@ -13,7 +12,6 @@ export default function EstimationCard({
   active,
   readonly = false,
   onStateChange,
-  className
 }: EstimationCardParam) {
 
   let [Value, setValue] = useState("")
@@ -38,7 +36,7 @@ export default function EstimationCard({
   return (
     <>
       <div
-        className={`btn btn-square ${!readonly && "btn-accent"} ${!Active && "btn-outline"} ${className}`}
+        className={`btn btn-square ${!readonly && "btn-accent"} ${!Active && "btn-outline"}`}
         onClick={onClickHandler}>
         {
           readonly
