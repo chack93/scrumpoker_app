@@ -3,6 +3,7 @@ import React, {useEffect, useState} from 'react'
 import Layout from '../components/layout'
 import {getStorage, setStorage} from './api/localstorage'
 import {requestClientCreate, requestClientFetch, requestClientUpdate, requestSessionCreate, requestSessionJoinCodeFetch} from './api/sp_rest'
+import {Close} from './api/sp_websocket'
 
 export default function Home() {
   const router = useRouter()
@@ -19,6 +20,7 @@ export default function Home() {
       setUsername(getStorage("username"))
       const jc = new URLSearchParams(window.location.search).get("join")
       setJoinCode(jc || getStorage("joinCode"))
+      Close()
       return
     }
     setStorage("username", username)

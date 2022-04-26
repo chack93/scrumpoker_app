@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react'
 import {RestBodyClient, RestBodyHistory, RestBodySession} from '../pages/api/sp_rest'
 import EstimationCard from './estimation_card'
+import {calculateAverage, calculatePert} from './estimation_section'
 import {parseCardString} from './session_section'
 
 export type HistorySectionParam = {
@@ -15,7 +16,7 @@ type ClientItemType = {
 
 type GameItemType = {
   gameId: string,
-  createdAt: string,
+  createdAt: Date,
   clientList: Array<ClientItemType>,
 }
 
@@ -33,7 +34,7 @@ export default function HistorySection({
         if (!listItem) {
           acc.push({
             gameId: el.gameId,
-            createdAt: el.createdAt,
+            createdAt: new Date(el.createdAt),
             clientList: [],
           })
           listItem = acc[acc.length - 1]
@@ -47,7 +48,7 @@ export default function HistorySection({
         }
         return acc
       }, [] as Array<GameItemType>)
-      setGameList(gameList)
+      setGameList(gameList.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime()))
 
       const clientList = HistoryList.reduce((acc, el) => {
         if (!acc.find(client => client.clientId === el.clientId)) {
@@ -60,47 +61,62 @@ export default function HistorySection({
         return acc
       }, [] as Array<ClientItemType>)
       setClientList(clientList)
-
-      console.log(gameList)
-      console.log(clientList)
     }
   }, [HistoryList])
 
-  function getEstimationTime(date: string) {
+  function getEstimationTime(date: Date) {
     try {
-      const d = new Date(date)
-      return `${d.getHours()}:${d.getMinutes()}`
+      return `${date.getHours()}:${date.getMinutes()}`
     } catch(ignore) {
       return ""
     }
   }
 
   function renderTable() {
-    const gameList = GameList.slice(0, 5)
+    const pastGamesLimit = 5
+    const offset = GameList.length - pastGamesLimit
+    const gameList = GameList.slice(-pastGamesLimit)
 
     return <table className="table-fixed">
       <thead>
         <tr
           className="border-t border-slate-500">
-          <th className="text-left p-1">User</th>
-          { gameList.map((el, idx) => <th className="text-left p-1" key={idx}>
-            No: {idx+1}
-            <br />
-            {getEstimationTime(el.createdAt)}
+          <th className="text-left p-1"></th>
+          { gameList.map((_el, idx) => <th className="text-left p-1" key={idx}>
+            No: {offset+idx+1}
           </th>) }
         </tr>
       </thead>
       <tbody>
+        <tr
+          className="border-y border-slate bg-secondary/50"
+        >
+          <td className="bg-primary">Time</td>
+          {
+            gameList.map(el => <td key={el.createdAt.getTime()}>{getEstimationTime(el.createdAt)}</td>)
+          }
+        </tr>
+        <tr
+          className="border-y border-slate bg-secondary/50"
+        >
+          <td className="bg-primary">Avg/Pert</td>
+          {
+            gameList.map(el => {
+              const estList = el.clientList.map(el => el.estimation)
+              return <td key={el.gameId}>{calculateAverage(estList)}/{calculatePert(estList)}</td>
+            })
+          }
+        </tr>
         { ClientList.map(client => (
           <tr
-            className="border-y border-slate-500 bg-secondary/50"
+            className="border-y border-slate bg-secondary/50"
             key={client.clientId}>
-            <td className="text-left p-1">{client.clientName}</td>
+            <td className="text-left p-1 bg-primary">{client.clientName}</td>
             {
               gameList.map(game => {
                 const gameClientJoint = game.clientList.find(el => el.clientId === client.clientId)
                 const key = game.gameId.substring(0, 8) + client.clientId.substring(0, 8)
-                return <td className="text-left p-1" key={key}>{gameClientJoint.estimation}</td>
+                return <td className="text-left p-1" key={key}>{gameClientJoint && gameClientJoint.estimation || "-"}</td>
               })
             }
           </tr>

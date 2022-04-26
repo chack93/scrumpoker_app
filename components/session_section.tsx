@@ -43,7 +43,7 @@ export default function SessionSectionCard({
 }: SessionSectionParam) {
 
   const locationOrigin = typeof window !== "undefined" ? window.location.origin : ""
-  const locationPathname = typeof window !== "undefined" ? window.location.pathname : ""
+  const locationPathname = typeof window !== "undefined" ? (window.location.pathname.substring(0, window.location.pathname.length-4)) : ""
   const defaultCardList = "☕=true,1=true,2=true,3=true,4=true,5=true,6=true,7=true,8=true,9=true,10=true"
 
   let [Description, setDescription] = useState("")
@@ -179,10 +179,10 @@ export default function SessionSectionCard({
                   </div>
                   <div className="flex justify-around mt-4">
                     <button
-                      className="btn btn-sm btn-success"
+                      className={`btn btn-sm btn-success ${Session.gameStatus !== "reveal" && "btn-disabled"}`}
                       onClick={onClickNewGameHandler}>New Game</button>
                     <button
-                      className="btn btn-sm btn-accent"
+                      className={`btn btn-sm btn-accent ${Session.gameStatus === "reveal" && "btn-disabled"}`}
                       onClick={onClickRevealtHandler}>Reveal</button>
                   </div>
                 </>
