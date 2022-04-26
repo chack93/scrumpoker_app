@@ -42,14 +42,20 @@ export default function SessionSectionCard({
   onRevealGame,
 }: SessionSectionParam) {
 
-  const locationOrigin = typeof window !== "undefined" ? window.location.origin : ""
-  const locationPathname = typeof window !== "undefined" ? (window.location.pathname.substring(0, window.location.pathname.length-4)) : ""
+  let locationOrigin = ""
+  let locationPathname = ""
   const defaultCardList = "☕=true,1=true,2=true,3=true,4=true,5=true,6=true,7=true,8=true,9=true,10=true"
 
+  let [IsInit, setIsInit] = useState(false)
   let [Description, setDescription] = useState("")
   let [CardList, setCardList] = useState([] as Array<CardListType>)
 
   useEffect(() => {
+    if (!IsInit) {
+      setIsInit(true)
+      locationOrigin = window.location.origin || ""
+      locationPathname = (window.location.pathname.substring(0, window.location.pathname.length-4)) || ""
+    }
     if (Session.description && !Description) {
       setDescription(Session.description)
     }
