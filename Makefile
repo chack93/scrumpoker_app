@@ -1,6 +1,6 @@
 NAME=scrumpoker_app
 TAG=$(shell cat package.json|grep version | sed -e 's/"version"://' -e 's/,//' -e 's/"//g' -e 's/ //g')
-DOCKER_CLOUD_NETWORK=net_cloud
+DOCKER_CLOUD_NETWORK=net_app
 PORT ?= 8080
 
 .PHONY: help
