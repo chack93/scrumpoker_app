@@ -74,7 +74,7 @@ export default function HistorySection({
 
   function renderTable() {
     const pastGamesLimit = 5
-    const offset = GameList.length - pastGamesLimit
+    const offset = Math.max(0, GameList.length - pastGamesLimit) 
     const gameList = GameList.slice(-pastGamesLimit)
 
     return <table className="table-fixed">

@@ -42,19 +42,19 @@ export default function SessionSectionCard({
   onRevealGame,
 }: SessionSectionParam) {
 
-  let locationOrigin = ""
-  let locationPathname = ""
   const defaultCardList = "☕=true,1=true,2=true,3=true,4=true,5=true,6=true,7=true,8=true,9=true,10=true"
 
   let [IsInit, setIsInit] = useState(false)
+  let [CurrentPath, setCurrentPath] = useState("")
   let [Description, setDescription] = useState("")
   let [CardList, setCardList] = useState([] as Array<CardListType>)
 
   useEffect(() => {
     if (!IsInit) {
       setIsInit(true)
-      locationOrigin = window.location.origin || ""
-      locationPathname = (window.location.pathname.substring(0, window.location.pathname.length-4)) || ""
+      const locationOrigin = window.location.origin || ""
+      const locationPathname = window.location.pathname.replace("/game", "") || ""
+      setCurrentPath(`${locationOrigin}${locationPathname}`)
     }
     if (Session.description && !Description) {
       setDescription(Session.description)
@@ -127,7 +127,7 @@ export default function SessionSectionCard({
               <span>Join Link: </span>
               <a
                 className="link-accent"
-                href={`${locationOrigin}${locationPathname}?join=${Session.joinCode || ""}`}
+                href={`${CurrentPath}?join=${Session.joinCode || ""}`}
               >#{Session.joinCode}</a>
             </div>
             {
