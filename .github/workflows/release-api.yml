@@ -14,9 +14,6 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./scrumpoker_api
     permissions:
       contents: read
       packages: write
@@ -54,6 +51,7 @@ jobs:
       - name: Build and push Docker image
         id: build-and-push
         uses: docker/build-push-action@v5
+        working-directory: ./scrumpoker_api
         with:
           context: .
           platforms: linux/amd64
