@@ -10,7 +10,7 @@ on:
 env:
   REGISTRY: ghcr.io
   # github.repository as <account>/<repo>
-  IMAGE_NAME: scrumpoker_api
+  IMAGE_NAME: ${{ github.repository }}_api
 jobs:
   build:
     runs-on: ubuntu-latest

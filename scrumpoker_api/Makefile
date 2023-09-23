@@ -1,4 +1,4 @@
-APP_NAME = scrumpoker_api
+APP_NAME = scrumpoker_app_api
 GH_REPO_NAME = scrumpoker_app
 VERSION = 1.0.2
 HOST ?= 127.0.0.1
