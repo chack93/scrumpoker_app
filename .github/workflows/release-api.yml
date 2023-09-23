@@ -10,10 +10,13 @@ on:
 env:
   REGISTRY: ghcr.io
   # github.repository as <account>/<repo>
-  IMAGE_NAME: scrumpoker_app
+  IMAGE_NAME: scrumpoker_api
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./scrumpoker_api
     permissions:
       contents: read
       packages: write
