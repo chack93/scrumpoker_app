@@ -30,39 +30,39 @@ export default function Home() {
   async function createGame(_event: React.MouseEvent<HTMLButtonElement>) {
     if (username.length < 1) return
 
-      setLoadingCreate(true)
-      try {
-        const newClient = await requestClientCreate(username)
-        setStorage("clientId", newClient.body.id)
-      } catch(e) {
-        console.error("login/create-client failed", e)
-        setErrorMsg("Create new session failed")
-        setLoadingCreate(false)
-        return
-      }
-
-      try {
-        const newSession = await requestSessionCreate(getStorage("clientId"))
-        setStorage("sessionId", newSession.body.id)
-        setStorage("joinCode", newSession.body.joinCode)
-      } catch(e) {
-        console.error("login/create-session failed", e)
-        setErrorMsg("Create new session failed")
-        setLoadingCreate(false)
-        return
-      }
+    setLoadingCreate(true)
+    try {
+      const newClient = await requestClientCreate(username)
+      setStorage("clientId", newClient.body.id)
+    } catch (e) {
+      console.error("login/create-client failed", e)
+      setErrorMsg("Create new session failed")
       setLoadingCreate(false)
-      router.push("/game")
+      return
+    }
+
+    try {
+      const newSession = await requestSessionCreate(getStorage("clientId"))
+      setStorage("sessionId", newSession.body.id)
+      setStorage("joinCode", newSession.body.joinCode)
+    } catch (e) {
+      console.error("login/create-session failed", e)
+      setErrorMsg("Create new session failed")
+      setLoadingCreate(false)
+      return
+    }
+    setLoadingCreate(false)
+    router.push("/game")
   }
 
   async function joinGame(_event: React.MouseEvent<HTMLButtonElement>) {
     if (username.length < 1 || joinCode.length < 6) return
-      setLoadingJoin(true)
+    setLoadingJoin(true)
 
     try {
       const session = await requestSessionJoinCodeFetch(joinCode)
       setStorage("sessionId", session.body.id)
-    } catch(e) {
+    } catch (e) {
       console.error("login/join-session failed", e)
       setErrorMsg("Unknown join code")
       setLoadingJoin(false)
@@ -73,7 +73,7 @@ export default function Home() {
       try {
         await requestClientFetch(getStorage("clientId"))
         await requestClientUpdate(getStorage("clientId"), username, getStorage("sessionId"))
-      } catch(e) {
+      } catch (e) {
         console.info("login/fetch-client failed", e)
         setStorage("clientId", "")
       }
@@ -82,7 +82,7 @@ export default function Home() {
       try {
         const newClient = await requestClientCreate(username)
         setStorage("clientId", newClient.body.id)
-      } catch(e) {
+      } catch (e) {
         console.error("login/create-client failed", e)
         setErrorMsg("Create new client failed")
         setLoadingJoin(false)
@@ -110,7 +110,7 @@ export default function Home() {
                     placeholder="Name"
                     className={`input input-bordered input-sm ${username.length < 1 && "btn-error btn-outline"}`}
                     value={username}
-                    onChange={event => setUsername(event.target.value)}/>
+                    onChange={event => setUsername(event.target.value)} />
                 </div>
                 <div className="form-control">
                   <label className="label">
@@ -121,7 +121,7 @@ export default function Home() {
                     placeholder="Join Code"
                     className={`input input-bordered input-sm ${joinCode.length < 6 && "btn-error btn-outline"}`}
                     value={joinCode}
-                    onChange={event => setJoinCode(event.target.value)}/>
+                    onChange={event => setJoinCode(event.target.value)} />
                 </div>
                 <div className="form-control mt-6">
                   <div className="flex w-full">
@@ -133,7 +133,7 @@ export default function Home() {
                         ${(
                           !username
                           || username.length < 1
-                        ) && "btn-disabled" }
+                        ) && "btn-disabled"}
                         ${loadingCreate && "loading"}
                         `}
                         onClick={createGame}>Create</button>
@@ -149,7 +149,7 @@ export default function Home() {
                           || !joinCode
                           || username.length < 1
                           || joinCode.length < 6
-                        ) && "btn-disabled" }
+                        ) && "btn-disabled"}
                         ${loadingJoin && "loading"}
                         `}
                         onClick={joinGame}>Join</button>
@@ -160,12 +160,12 @@ export default function Home() {
             </div>
             {
               errorMsg.length > 0 &&
-                <div className="alert alert-error shadow-lg">
-                  <div>
-                    <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    <div>{errorMsg}</div>
-                  </div>
+              <div className="alert alert-error shadow-lg">
+                <div>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  <div>{errorMsg}</div>
                 </div>
+              </div>
             }
           </div>
         </div>

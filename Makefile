@@ -1,42 +1,42 @@
-NAME=scrumpoker_app
-TAG=$(shell cat package.json|grep version | sed -e 's/"version"://' -e 's/,//' -e 's/"//g' -e 's/ //g')
+APP_NAME=scrumpoker_app
+GH_REPO_NAME = scrumpoker_app
+VERSION=$(shell cat package.json|grep version | sed -e 's/"version"://' -e 's/,//' -e 's/"//g' -e 's/ //g')
 DOCKER_CLOUD_NETWORK=net_app
 PORT ?= 8080
 
 .PHONY: help
 help:
 	@echo "make options\n\
-		- destroy     destroy docker container & image of name ${NAME}\n\
-		- build       build production docker image ${NAME}:${TAG}\n\
-		- stop        stop docker container ${NAME}\n\
-		- run-docker  run development docker container ${NAME}:latest\n\
+		- destroy     destroy docker container & image of name ${APP_NAME}\n\
+		- build       build production docker image ${APP_NAME}:${VERSION}\n\
+		- stop        stop docker container ${APP_NAME}\n\
+		- run-docker  run development docker container ${APP_NAME}:latest\n\
 		- watch       run localy at port ${PORT} & watch for changes\n\
 		- run         run localy at port ${PORT}\n\
 		- format      format code according to .prettierrc\n\
 		- release     push latest image to ghcr, login using personal access token env variable CR_PAT\n\
-		- deploy      release latest image on live server, env variable: CLOUD_REMOTE\n\
 		- help        display this message"
 
 .PHONY: destroy_container
 destroy_container:
-	docker container rm ${NAME} -f
+	docker container rm ${APP_NAME} -f
 
 .PHONY: destroy_image
 destroy_image:
-	docker image rm ${NAME}:${TAG} -f
-	docker image rm "${NAME}:latest" -f
+	docker image rm ${APP_NAME}:${VERSION} -f
+	docker image rm "${APP_NAME}:latest" -f
 
 .PHONY: destroy
 destroy: destroy_container destroy_image
 
 .PHONY: build
 build: destroy_image
-	docker build --tag ${NAME}:${TAG} -f ./Dockerfile .
-	docker tag ${NAME}:${TAG} ${NAME}:latest
+	docker build --tag ${APP_NAME}:${VERSION} -f ./Dockerfile .
+	docker tag ${APP_NAME}:${VERSION} ${APP_NAME}:latest
 
 .PHONY: stop
 stop:
-	docker container stop ${NAME}
+	docker container stop ${APP_NAME}
 
 .PHONY: create_docker_network
 create_docker_network:
@@ -62,37 +62,37 @@ format:
 run-docker: destroy_container build create_docker_network
 	docker container run \
 		--detach \
-		--name ${NAME} \
+		--name ${APP_NAME} \
 		--net ${DOCKER_CLOUD_NETWORK} \
 		--restart always \
-		${NAME}
-
-.PHONY: ensure_builder
-ensure_builder:
-	docker buildx create --use --name multi-arch-builder || true
+		${APP_NAME}
 
 .PHONY: release
-release: ensure_builder
+release:
 	echo ${CR_PAT} | docker login ghcr.io --username ${CR_USER} --password-stdin
-	docker buildx build \
+	docker build \
 		--platform linux/amd64 \
-		--tag ghcr.io/${CR_USER}/${NAME}:${TAG} \
-		--tag ghcr.io/${CR_USER}/${NAME}:latest \
-		--push \
+		--tag ghcr.io/${CR_USER}/${APP_NAME}:${VERSION} \
+		--tag ghcr.io/${CR_USER}/${APP_NAME}:latest \
+		--label "org.opencontainers.image.source=https://github.com/${CR_USER}/${GH_REPO_NAME}" \
+		--label "org.opencontainers.image.description=${APP_NAME} container image" \
+		--label "org.opencontainers.image.licenses=NONE" \
 		-f ./Dockerfile .
+	docker push ghcr.io/${CR_USER}/${APP_NAME}:${VERSION}
+	docker push ghcr.io/${CR_USER}/${APP_NAME}:latest
 
 .PHONY: deploy
 deploy:
 	ssh ${CLOUD_REMOTE} ' \
 		echo ${CR_PAT} | docker login ghcr.io --username ${CR_USER} --password-stdin; \
-		docker pull ghcr.io/${CR_USER}/${NAME}:${TAG}; \
-		docker pull ghcr.io/${CR_USER}/${NAME}:latest; \
-		docker container rm ${NAME} -f; \
+		docker pull ghcr.io/${CR_USER}/${APP_NAME}:${VERSION}; \
+		docker pull ghcr.io/${CR_USER}/${APP_NAME}:latest; \
+		docker container rm ${APP_NAME} -f; \
 		docker network create ${DOCKER_CLOUD_NETWORK} || true; \
 		docker container run \
 		--detach \
-		--name ${NAME} \
+		--name ${APP_NAME} \
 		--net ${DOCKER_CLOUD_NETWORK} \
 		--restart always \
-		ghcr.io/${CR_USER}/${NAME}; \
+		ghcr.io/${CR_USER}/${APP_NAME}; \
 		'

@@ -1,0 +1,122 @@
+paths:
+  /client:
+    post:
+      description: Creates a new client, client will be destroyed after 48h of inactivity. (no estimation or update to the client settings)
+      operationId: createClient
+      requestBody:
+        description: Details about new client to create
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientNew'
+      responses:
+        '200':
+          description: client response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'
+        '400':
+          description: invalid request body
+          content:
+            application/json:
+              schema:
+                $ref: '../common/common.yaml#/components/schemas/Error'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '../common/common.yaml#/components/schemas/Error'
+  /client/{id}:
+    get:
+      description: Read client of id. Use this to check if client is still active or a new one must be created.
+      operationId: readClient
+      parameters:
+        - name: id
+          in: path
+          description: id of client
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: client response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'
+        '404':
+          description: not found 
+          content:
+            application/json:
+              schema:
+                $ref: '../common/common.yaml#/components/schemas/Error'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '../common/common.yaml#/components/schemas/Error'
+    put:
+      description: update client of id
+      operationId: updateClient
+      parameters:
+        - name: id
+          in: path
+          description: id of client
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Client to update
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientNew'
+      responses:
+        '204':
+          description: client updated
+        '400':
+          description: invalid request body
+          content:
+            application/json:
+              schema:
+                $ref: '../common/common.yaml#/components/schemas/Error'
+        '404':
+          description: not found 
+          content:
+            application/json:
+              schema:
+                $ref: '../common/common.yaml#/components/schemas/Error'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '../common/common.yaml#/components/schemas/Error'
+components:
+  schemas:
+    Client:
+      allOf:
+        - $ref: '../common/common.yaml#/components/schemas/BaseModel'
+        - $ref: '#/components/schemas/ClientNew'
+    ClientNew:
+      allOf:
+        - type: object
+          properties:
+            name:
+              type: string
+            viewer:
+              type: boolean
+            estimation:
+              type: string
+            connected:
+              type: boolean
+            sessionId:
+              type: string
+              format: uuid

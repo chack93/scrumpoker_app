@@ -1,0 +1,49 @@
+openapi: "3.0.0"
+info:
+  version: __VERSION__
+  title: __APP_NAME__ REST api 
+  description: __APP_NAME__ REST api
+servers:
+  - url: /api/scrumpoker
+paths:
+  /ws/{clientId}/{groupId}:
+    get:
+      description: |
+        websocket endpoint.
+        The socket-messages head describes
+        * what action shall be performed (action)
+        * the origin/destination of the message (clientId)
+        * the group this message is intended for (groupId)
+        * actions
+          * (update) transmit latest client/session state from client to server or vice versa
+      operationId: sessionWebsocket
+      parameters:
+        - name: clientId
+          in: path
+          description: client id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: groupId
+          in: path
+          description: group id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '101':
+          description: successfully upgraded to websocket connection
+          content:
+            application/json:
+              schema:
+                $ref: '../common/common.yaml#/components/schemas/SocketMsg'
+        '404':
+          description: session of id not found 
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'

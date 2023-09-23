@@ -1,4 +1,11 @@
-export const baseUrl = "/api/scrumpoker"
+export const baseUrl = joinUrl(process.env.NEXT_PUBLIC_API_BASE_URL, "/api")
+
+function joinUrl(...args: string[]): string {
+  return args
+    .map(el => el.startsWith("/") ? el.substring(1) : el)
+    .map(el => el.endsWith("/") ? el.substring(0, el.length - 1) : el)
+    .join("/")
+}
 
 export type RestBodyClient = {
   createdAt: string
@@ -96,12 +103,12 @@ export function request(method: string, path: string, body: object = undefined):
           header[headerEntries[idx][0]] = headerEntries[idx][1]
         }
         response.body
-        if (response.status >= 200 && response.status < 300) return { body: await response.text(), header };
+        if (response.status >= 200 && response.status < 300) return {body: await response.text(), header};
         else reject(Error(`${response.status} - ${response.statusText}`));
       })
-      .then(({ body, header }) => {
+      .then(({body, header}) => {
         const bodyObject = body ? JSON.parse(body) : {}
-        resolve({ body: bodyObject, header });
+        resolve({body: bodyObject, header});
       })
       .catch((error) => {
         reject(error);

@@ -2,6 +2,7 @@
 node_modules
 *.swp
 .env
+.env.prod
 .envrc
 
 /.next/
