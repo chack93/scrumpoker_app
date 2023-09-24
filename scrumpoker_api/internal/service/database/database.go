@@ -105,11 +105,11 @@ func ensureAppTableExists(dbUrl url.URL) error {
 		logrus.Debugf("app table: %s exists", appTable)
 	}
 
-	logrus.Infof("create extension uuid-ossp")
 	if rs := db.Exec(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`); rs.Error != nil {
 		logrus.Errorf("create extension uuid-ossp failed, err: %v", rs.Error)
 		return rs.Error
 	}
+	logrus.Infof("created extension uuid-ossp")
 
 	return nil
 }
