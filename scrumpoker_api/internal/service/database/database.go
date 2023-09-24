@@ -76,6 +76,14 @@ func ensureAppTableExists(dbUrl url.URL) error {
 		logrus.Errorf("open db connection failed, url: %s err: %v", dbUrlPg.String(), err)
 		return err
 	}
+	sql, err := db.DB()
+	defer func() {
+		_ = sql.Close()
+	}()
+	if err != nil {
+		logrus.Errorf("close connection failed defered, err: %v", err)
+		return err
+	}
 
 	stmt := fmt.Sprintf("SELECT * FROM pg_database WHERE datname = '%s';", appTable)
 	rs := db.Raw(stmt)
@@ -86,29 +94,21 @@ func ensureAppTableExists(dbUrl url.URL) error {
 
 	var rec = make(map[string]interface{})
 	if rs.Find(rec); len(rec) == 0 {
-		logrus.Infof("create database %s", appTable)
 		stmt := fmt.Sprintf("CREATE DATABASE %s;", appTable)
 		if rs := db.Exec(stmt); rs.Error != nil {
 			logrus.Errorf("create table %s failed, err: %v", appTable, rs.Error)
 			return rs.Error
 		}
-		logrus.Infof("create extension uuid-ossp")
-		if rs := db.Exec(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`); rs.Error != nil {
-			logrus.Errorf("create extension uuid-ossp failed, err: %v", rs.Error)
-			return rs.Error
-		}
 
-		sql, err := db.DB()
-		defer func() {
-			_ = sql.Close()
-		}()
-		if err != nil {
-			logrus.Errorf("close connection failed, err: %v", err)
-			return err
-		}
 		logrus.Infof("app table: %s created", appTable)
 	} else {
 		logrus.Debugf("app table: %s exists", appTable)
+	}
+
+	logrus.Infof("create extension uuid-ossp")
+	if rs := db.Exec(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`); rs.Error != nil {
+		logrus.Errorf("create extension uuid-ossp failed, err: %v", rs.Error)
+		return rs.Error
 	}
 
 	return nil
