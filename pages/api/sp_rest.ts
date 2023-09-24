@@ -1,5 +1,5 @@
 //export const baseUrl = joinUrl(process.env.NEXT_PUBLIC_API_BASE_URL, "/api")
-export const baseUrl = joinUrl(typeof window !== undefined ? window.location.href : "./", "/api")
+export const baseUrl = joinUrl(typeof window !== "undefined" ? window.location.href : "./", "/api")
 
 function joinUrl(...args: string[]): string {
   return args
