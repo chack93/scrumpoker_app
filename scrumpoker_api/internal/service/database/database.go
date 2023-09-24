@@ -68,25 +68,26 @@ func (s *database) Init() error {
 }
 
 func ensureAppTableExists(dbUrl url.URL) error {
+	// connect to existing postgres first & continue to create app db
 	appTable := strings.Trim(dbUrl.Path, "/")
 	dbUrlPg, _ := url.Parse(dbUrl.String())
 	dbUrlPg.Path = "postgres"
-	db, err := gorm.Open(postgres.Open(dbUrlPg.String()), &gorm.Config{})
+	dbPg, err := gorm.Open(postgres.Open(dbUrlPg.String()), &gorm.Config{})
 	if err != nil {
-		logrus.Errorf("open db connection failed, url: %s err: %v", dbUrlPg.String(), err)
+		logrus.Errorf("open pg-db connection failed, url: %s err: %v", dbUrlPg.String(), err)
 		return err
 	}
-	sql, err := db.DB()
+	sqlPg, err := dbPg.DB()
 	defer func() {
-		_ = sql.Close()
+		_ = sqlPg.Close()
 	}()
 	if err != nil {
-		logrus.Errorf("close connection failed defered, err: %v", err)
+		logrus.Errorf("create pg-db connection failed defered, err: %v", err)
 		return err
 	}
 
 	stmt := fmt.Sprintf("SELECT * FROM pg_database WHERE datname = '%s';", appTable)
-	rs := db.Raw(stmt)
+	rs := dbPg.Raw(stmt)
 	if rs.Error != nil {
 		logrus.Errorf("query for %s failed, err: %v", appTable, rs.Error)
 		return rs.Error
@@ -95,7 +96,7 @@ func ensureAppTableExists(dbUrl url.URL) error {
 	var rec = make(map[string]interface{})
 	if rs.Find(rec); len(rec) == 0 {
 		stmt := fmt.Sprintf("CREATE DATABASE %s;", appTable)
-		if rs := db.Exec(stmt); rs.Error != nil {
+		if rs := dbPg.Exec(stmt); rs.Error != nil {
 			logrus.Errorf("create table %s failed, err: %v", appTable, rs.Error)
 			return rs.Error
 		}
@@ -105,7 +106,21 @@ func ensureAppTableExists(dbUrl url.URL) error {
 		logrus.Debugf("app table: %s exists", appTable)
 	}
 
-	if rs := db.Exec("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";"); rs.Error != nil {
+	// create extension in db
+	db, err := gorm.Open(postgres.Open(dbUrl.String()), &gorm.Config{})
+	if err != nil {
+		logrus.Errorf("open db connection failed, url: %s err: %v", dbUrl.String(), err)
+		return err
+	}
+	sql, err := db.DB()
+	defer func() {
+		_ = sql.Close()
+	}()
+	if err != nil {
+		logrus.Errorf("create connection failed defered, err: %v", err)
+		return err
+	}
+	if rs := db.Exec(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`); rs.Error != nil {
 		logrus.Errorf("create extension uuid-ossp failed, err: %v", rs.Error)
 		return rs.Error
 	}
