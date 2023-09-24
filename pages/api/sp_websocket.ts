@@ -1,5 +1,5 @@
 import ReconnectingWebSocket from "reconnecting-websocket"
-import {baseUrl, RestBodyClient, RestBodyHistory, RestBodySession} from "./sp_rest"
+import {RestBodyClient, RestBodyHistory, RestBodySession} from "./sp_rest"
 
 let connection: ReconnectingWebSocket = undefined
 
@@ -41,8 +41,7 @@ export function Close() {
 
 export function Connect(clientId: string, groupId: string) {
   const protocol = location.href.indexOf("https") !== -1 ? "wss://" : "ws://"
-  const baseUrlObj = new URL(baseUrl)
-  const url = `${protocol}${location.host}${baseUrlObj.pathname}/ws/${clientId}/${groupId}`
+  const url = `${protocol}${location.host}/scrumpoker/api/ws/${clientId}/${groupId}`
   connection = new ReconnectingWebSocket(url)
 
   connection.addEventListener("message", event => {

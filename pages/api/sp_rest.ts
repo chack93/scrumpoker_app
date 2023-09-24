@@ -1,6 +1,6 @@
-//export const baseUrl = joinUrl(process.env.NEXT_PUBLIC_API_BASE_URL, "/api")
-export const baseUrl = joinUrl(typeof window !== "undefined" ? window.location.origin : "./", "/scrumpoker/api")
-
+function baseUrl(): string {
+  return joinUrl(window.location.origin, "/scrumpoker/api")
+}
 function joinUrl(...args: string[]): string {
   return args
     .map(el => el.startsWith("/") ? el.substring(1) : el)
@@ -53,17 +53,17 @@ export interface RestResponseSession extends RestResponse {
 }
 
 export async function requestClientFetch(clientId: string): Promise<RestResponseClient> {
-  return await request("GET", `${baseUrl}/client/${clientId}`) as RestResponseClient
+  return await request("GET", `${baseUrl()}/client/${clientId}`) as RestResponseClient
 }
 export async function requestClientCreate(name: string, sessionId: string = "", viewer: boolean = false): Promise<RestResponseClient> {
-  return await request("POST", `${baseUrl}/client`, {
+  return await request("POST", `${baseUrl()}/client`, {
     name,
     sessionId,
     viewer
   }) as RestResponseClient
 }
 export async function requestClientUpdate(clientId: string, name: string, sessionId: string = "", viewer: boolean = false): Promise<RestResponseClient> {
-  return await request("PUT", `${baseUrl}/client/${clientId}`, {
+  return await request("PUT", `${baseUrl()}/client/${clientId}`, {
     name,
     sessionId,
     viewer
@@ -71,17 +71,17 @@ export async function requestClientUpdate(clientId: string, name: string, sessio
 }
 
 export async function requestSessionFetch(sessionId: string): Promise<RestResponseSession> {
-  return await request("GET", `${baseUrl}/session/${sessionId}`) as RestResponseSession
+  return await request("GET", `${baseUrl()}/session/${sessionId}`) as RestResponseSession
 }
 export async function requestSessionJoinCodeFetch(joinCode: string): Promise<RestResponseSession> {
-  return await request("GET", `${baseUrl}/session/join/${joinCode}`) as RestResponseSession
+  return await request("GET", `${baseUrl()}/session/join/${joinCode}`) as RestResponseSession
 }
 export async function requestSessionCreate(
   ownerClientId: string,
   description: string = "",
   cardSelectionList: string = "",
 ): Promise<RestResponseSession> {
-  return await request("POST", `${baseUrl}/session`, {
+  return await request("POST", `${baseUrl()}/session`, {
     cardSelectionList,
     description,
     ownerClientId
