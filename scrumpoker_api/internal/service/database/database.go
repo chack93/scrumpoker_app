@@ -40,7 +40,7 @@ func New() *database {
 }
 
 func (s *database) Init() error {
-	dbUrl, err := url.Parse(viper.GetString("database.url"))
+	dbUrl, err := url.Parse(fmt.Sprintf("%s/%s", viper.GetString("database.url"), viper.GetString("database.dbname")))
 	if err != nil {
 		logrus.Errorf("database.url config invalid: %s, err: %v", dbUrl, err)
 		return err

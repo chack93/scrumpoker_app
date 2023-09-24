@@ -8,7 +8,7 @@ DOCKER_NETWORK ?= net_app
 DATABASE_URL ?= postgres://root@db_cockroach:26257/${APP_NAME}?sslmode=disable
 TEST_DATABASE_URL ?= postgres://root@db_cockroach:26257/${APP_NAME}_test?sslmode=disable
 TEST_POSTGRES_URL := $(shell echo ${TEST_DATABASE_URL} | sed "s/${APP_NAME}_test/postgres/")
-NATS_URL ?= nats://msq_nats:4222
+NATS_URL ?= nats://localhost:4222
 CR_USER?=unset
 CR_PAT?=unset
 
