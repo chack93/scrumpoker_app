@@ -86,11 +86,13 @@ func ensureAppTableExists(dbUrl url.URL) error {
 
 	var rec = make(map[string]interface{})
 	if rs.Find(rec); len(rec) == 0 {
+		logrus.Infof("create database %s", appTable)
 		stmt := fmt.Sprintf("CREATE DATABASE %s;", appTable)
 		if rs := db.Exec(stmt); rs.Error != nil {
 			logrus.Errorf("create table %s failed, err: %v", appTable, rs.Error)
 			return rs.Error
 		}
+		logrus.Infof("create extension uuid-ossp")
 		if rs := db.Exec(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`); rs.Error != nil {
 			logrus.Errorf("create extension uuid-ossp failed, err: %v", rs.Error)
 			return rs.Error
