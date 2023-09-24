@@ -148,8 +148,8 @@ components:
           $ref: '#/components/schemas/Session'
       type: object
 info:
-  description: scrumpoker_api REST api
-  title: scrumpoker_api REST api
+  description: scrumpoker_app_api REST api
+  title: scrumpoker_app_api REST api
   version: 1.0.2
 openapi: 3.0.0
 paths:

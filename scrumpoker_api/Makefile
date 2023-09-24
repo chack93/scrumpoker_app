@@ -5,7 +5,7 @@ HOST ?= 127.0.0.1
 PORT ?= 8080
 DOCKER_NETWORK ?= net_app
 #DATABASE_URL ?= postgres://postgres:postgres@db_postgres:5432/${APP_NAME}?sslmode=disable
-DATABASE_URL ?= postgres://root@db_cockroach:26257/${APP_NAME}?sslmode=disable
+DATABASE_URL ?= postgres://postgres:postgres@localhost:5432/${APP_NAME}?sslmode=disable
 TEST_DATABASE_URL ?= postgres://root@db_cockroach:26257/${APP_NAME}_test?sslmode=disable
 TEST_POSTGRES_URL := $(shell echo ${TEST_DATABASE_URL} | sed "s/${APP_NAME}_test/postgres/")
 NATS_URL ?= nats://localhost:4222

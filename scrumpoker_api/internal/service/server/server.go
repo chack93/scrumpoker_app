@@ -48,7 +48,7 @@ func (srv *Server) Init(wg *sync.WaitGroup) error {
 	srv.echo.Use(middleware.Logger())
 	srv.echo.Use(middleware.Recover())
 
-	baseURL := "/api/scrumpoker"
+	baseURL := "/scrumpoker/api"
 	apiGroup := srv.echo.Group(baseURL)
 	apiGroup.GET("/health", func(c echo.Context) error {
 		return c.JSON(http.StatusOK, struct {

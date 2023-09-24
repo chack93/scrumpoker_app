@@ -40,18 +40,12 @@ func New() *database {
 }
 
 func (s *database) Init() error {
-	dbs := viper.GetString("database.url")
-	if strings.HasSuffix(dbs, "/postgres") {
-		dbs = dbs[:len(dbs)-len("/postgres")]
-	}
-	if strings.HasSuffix(dbs, "/") {
-		dbs = dbs[:len(dbs)-1]
-	}
-	dbUrl, err := url.Parse(fmt.Sprintf("%s/%s", dbs, viper.GetString("database.dbname")))
+	dbUrl, err := url.Parse(viper.GetString("database.url"))
 	if err != nil {
 		logrus.Errorf("database.url config invalid: %s, err: %v", dbUrl, err)
 		return err
 	}
+	dbUrl.Path = viper.GetString("database.dbname")
 
 	if err := ensureAppTableExists(*dbUrl); err != nil {
 		logrus.Errorf("create app table failed, err: %v", err)
@@ -60,7 +54,7 @@ func (s *database) Init() error {
 
 	db, err := gorm.Open(postgres.Open(dbUrl.String()), &gorm.Config{
 		NamingStrategy: schema.NamingStrategy{
-			TablePrefix: strings.Trim(dbUrl.Path, "/") + ".",
+			TablePrefix: strings.Trim(dbUrl.Path, "/") + "_",
 		},
 	})
 	if err != nil {
@@ -69,16 +63,17 @@ func (s *database) Init() error {
 	}
 	s.DB = db
 
-	logrus.Infof("connected to host: %s%s", dbUrl.Host, dbUrl.Path)
+	logrus.Infof("connected to host: %s@%s", dbUrl.Host, dbUrl.Path)
 	return nil
 }
 
 func ensureAppTableExists(dbUrl url.URL) error {
 	appTable := strings.Trim(dbUrl.Path, "/")
-	dbUrl.Path = "postgres"
-	db, err := gorm.Open(postgres.Open(dbUrl.String()), &gorm.Config{})
+	dbUrlPg, _ := url.Parse(dbUrl.String())
+	dbUrlPg.Path = "postgres"
+	db, err := gorm.Open(postgres.Open(dbUrlPg.String()), &gorm.Config{})
 	if err != nil {
-		logrus.Errorf("open db connection failed, url: %s err: %v", dbUrl.String(), err)
+		logrus.Errorf("open db connection failed, url: %s err: %v", dbUrlPg.String(), err)
 		return err
 	}
 
@@ -94,6 +89,10 @@ func ensureAppTableExists(dbUrl url.URL) error {
 		stmt := fmt.Sprintf("CREATE DATABASE %s;", appTable)
 		if rs := db.Exec(stmt); rs.Error != nil {
 			logrus.Errorf("create table %s failed, err: %v", appTable, rs.Error)
+			return rs.Error
+		}
+		if rs := db.Exec(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`); rs.Error != nil {
+			logrus.Errorf("create extension uuid-ossp failed, err: %v", rs.Error)
 			return rs.Error
 		}
 
