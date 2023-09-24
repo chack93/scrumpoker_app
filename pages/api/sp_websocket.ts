@@ -26,7 +26,7 @@ export type WsMsgBodyUpdate = {
 }
 
 export function Send(msg: WsMsg) {
-  if (!connection)  {
+  if (!connection) {
     Connect(msg.head.clientId, msg.head.groupId)
   }
   connection.send(JSON.stringify(msg))
@@ -41,7 +41,8 @@ export function Close() {
 
 export function Connect(clientId: string, groupId: string) {
   const protocol = location.href.indexOf("https") !== -1 ? "wss://" : "ws://"
-  const url = `${protocol}${location.host}${baseUrl}/ws/${clientId}/${groupId}`
+  const baseUrlObj = new URL(baseUrl)
+  const url = `${protocol}${location.host}${baseUrlObj.pathname}/ws/${clientId}/${groupId}`
   connection = new ReconnectingWebSocket(url)
 
   connection.addEventListener("message", event => {
