@@ -2,7 +2,6 @@ import React, {ReactElement} from 'react'
 import Head from 'next/head'
 import styles from '../styles/Layout.module.css'
 import Link from 'next/link';
-import Image from 'next/image'
 
 export type LayoutParam = {
   children: ReactElement;
@@ -15,12 +14,12 @@ export default function Layout({children, title = ""}: LayoutParam) {
       <Head>
         <title>Scrumpoker {title}</title>
         <meta name="description" content="Scrumpoker" />
-        <link rel="icon" href="./favicon/favicon.ico" />
-        <link rel="apple-touch-icon" sizes="180x180" href="./favicon/apple-touch-icon.png" />
-        <link rel="icon" type="image/png" sizes="32x32" href="./favicon/favicon-32x32.png" />
-        <link rel="icon" type="image/png" sizes="16x16" href="./favicon/favicon-16x16.png" />
-        <link rel="manifest" href="./favicon/site.webmanifest" />
-        <link rel="mask-icon" href="./favicon/safari-pinned-tab.svg" color="#33050d" />
+        <link rel="icon" href="/scrumpoker/favicon/favicon.ico" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/scrumpoker/favicon/apple-touch-icon.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/scrumpoker/favicon/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/scrumpoker/favicon/favicon-16x16.png" />
+        <link rel="manifest" href="/scrumpoker/favicon/site.webmanifest" />
+        <link rel="mask-icon" href="/scrumpoker/favicon/safari-pinned-tab.svg" color="#33050d" />
         <meta name="msapplication-TileColor" content="#da532c" />
         <meta name="theme-color" content="#272727" />
       </Head>
@@ -30,8 +29,8 @@ export default function Layout({children, title = ""}: LayoutParam) {
           <div className="flex-1">
             <Link href="/">
               <a className={`${styles.imgLogo} ${styles.jumpAnim}`}>
-                <Image
-                  src="/image/logo.png"
+                <img
+                  src="/scrumpoker/image/logo.png"
                   className="w-10 h-10"
                   alt="Logo"
                   width={500}
