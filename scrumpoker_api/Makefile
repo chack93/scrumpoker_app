@@ -110,7 +110,7 @@ docker-run: destroy_container docker-build create_docker_network
 release:
 	echo ${CR_PAT} | docker login ghcr.io --username ${CR_USER} --password-stdin
 	docker build \
-		--platform linux/amd64 \
+		--platform linux/arm64 \
 		--tag ghcr.io/${CR_USER}/${APP_NAME}:${VERSION} \
 		--tag ghcr.io/${CR_USER}/${APP_NAME}:latest \
 		--label "org.opencontainers.image.source=https://github.com/${CR_USER}/${GH_REPO_NAME}" \
